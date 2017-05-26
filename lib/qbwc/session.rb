@@ -1,7 +1,7 @@
 class QBWC::Session
 
   attr_reader :user, :company, :ticket, :progress
-  attr_accessor :error, :status_code, :status_severity
+  attr_accessor :error, :status_code, :status_severity, :account_id
 
   @@session = nil
 
@@ -9,9 +9,10 @@ class QBWC::Session
 		@@session
 	end
 
-  def initialize(user = nil, company = nil, ticket = nil)
+  def initialize(user = nil, company = nil, ticket = nil, account_id = nil)
     @user = user
     @company = company
+    @account_id = account_id
     @current_job = nil
     @error = nil
     @progress = 0
@@ -121,7 +122,7 @@ class QBWC::Session
   end
 
   def pending_jobs
-    @pending_jobs ||= QBWC.pending_jobs(@company, self)
+    @pending_jobs ||= QBWC.pending_jobs(@company, @account_id, self)
   end
 
   def complete_with_success
