@@ -1,11 +1,12 @@
 class QBWC::Job
 
-  attr_reader :name, :company, :worker_class
+  attr_reader :name, :company, :account_id, :worker_class
 
   def initialize(name, enabled, company, worker_class, requests = [], data = nil)
     @name = name
     @enabled = enabled
     @company = company || QBWC.company_file_path
+    @account_id = account_id
     @worker_class = worker_class
     @data = data
 
