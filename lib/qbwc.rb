@@ -70,6 +70,9 @@ module QBWC
   mattr_accessor :log_requests_and_responses
   @@log_requests_and_responses = Rails.env == 'production' ? false : true
 
+  mattr_accessor :interactive_path
+  @@interactive_path = nil
+
   class << self
 
     def storage_module

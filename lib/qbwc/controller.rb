@@ -56,6 +56,11 @@ module QBWC
                     :args   => {:ticket => :string},
                     :return => {'tns:getLastErrorResult' => :string},
                     :response_tag => "#{wash_out_xml_namespace}getLastErrorResponse"
+
+        soap_action 'getInteractiveURL', :to => :get_interactive_url,
+                    :args   => {:wcTicket => :string, :sessionID => :string},
+                    :return => {'tns:getInteractiveURLResult' => :string},
+                    :response_tag => "#{wash_out_xml_namespace}getInteractiveURLResponse"
       end
     end
 
@@ -158,7 +163,14 @@ QWC
     end
 
     def get_last_error
-      render :soap => {'tns:getLastErrorResult' => @session.error || ''}
+      render :soap => {'tns:getLastErrorResult' => @session.error || 'Interactive mode'}
+    end
+
+    def get_interactive_url
+      url = "#{root_url(:protocol => 'https://').chop}#{QBWC.interactive_path}"
+      result = {'tns:getInteractiveURLResult' => url}
+      binding.pry
+      render :soap => result
     end
 
     def app_name
