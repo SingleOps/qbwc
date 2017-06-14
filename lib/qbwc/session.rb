@@ -1,7 +1,7 @@
 class QBWC::Session
 
   attr_reader :user, :company, :ticket, :progress
-  attr_accessor :error, :status_code, :status_severity, :account_id
+  attr_accessor :error, :status_code, :status_severity, :account_id, :initial_job_count, :pending_jobs
 
   @@session = nil
 
@@ -65,7 +65,7 @@ class QBWC::Session
       request.delete('xml_attributes')
       request.values.first['xml_attributes'] = {'iterator' => 'Continue', 'iteratorID' => self.iterator_id}
       request = QBWC::Request.new(request)
-    end 
+    end
     request
   end
 
@@ -106,6 +106,12 @@ class QBWC::Session
   def destroy
     self.freeze
     @@session = nil
+  end
+
+  def refresh_pending_jobs
+    @pending_jobs = QBWC.pending_jobs(@company, @account_id, self)
+    @initial_job_count = @pending_jobs.length
+    save
   end
 
   protected

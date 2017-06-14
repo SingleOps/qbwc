@@ -163,13 +163,12 @@ QWC
     end
 
     def get_last_error
-      render :soap => {'tns:getLastErrorResult' => @session.error || 'Interactive mode'}
+      render :soap => {'tns:getLastErrorResult' => @session.error || ''}
     end
 
     def get_interactive_url
       url = "#{root_url(:protocol => 'https://').chop}#{QBWC.interactive_path}"
       result = {'tns:getInteractiveURLResult' => url}
-      binding.pry
       render :soap => result
     end
 

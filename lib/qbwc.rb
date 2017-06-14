@@ -117,7 +117,7 @@ module QBWC
       @@on_error = "stopOnError" if reaction == :stop
       @@on_error = "continueOnError" if reaction == :continue
     end
-    
+
     def api=(api)
       raise 'Quickbooks type must be :qb or :qbpos' unless [:qb, :qbpos].include?(api)
       @@api = api
