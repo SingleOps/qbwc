@@ -84,7 +84,7 @@ module QBWC
     end
 
     def get_pending_jobs_by_name(job_names, account_id, session)
-      storage_module::Job.get_jobs_by_names(job_names, account_id).select {|job| job.company == company && job.account_id == session.account_id && job.pending?(session)}
+      storage_module::Job.get_jobs_by_names(job_names, account_id).select {|job| job.pending?(session)}
     end
 
     def add_job(name, enabled = true, company = nil, account_id = nil, klass = QBWC::Worker, requests = nil, data = nil)
