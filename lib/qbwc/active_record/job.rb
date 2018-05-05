@@ -124,7 +124,12 @@ class QBWC::ActiveRecord::Job < QBWC::Job
   end
 
   def self.get_jobs_by_names(job_names, account_id)
-    jobs = QbwcJob.where(account_id: account_id, name: job_names)
+    jobs = QbwcJob.where(name: job_names)
+
+    if account_id
+      jobs = jobs.where(account_id: account_id)
+    end
+
     jobs.map {|ar_job| ar_job.to_qbwc_job}
   end
 
