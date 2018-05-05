@@ -61,7 +61,7 @@ class QBWC::ActiveRecord::Job < QBWC::Job
   end
 
   def requests(session = QBWC::Session.get)
-    @requests = find_ar_job.pluck(:requests).first
+    @requests = find_ar_job.requests
     super
   end
 
@@ -71,7 +71,7 @@ class QBWC::ActiveRecord::Job < QBWC::Job
   end
 
   def requests_provided_when_job_added
-    find_ar_job.pluck(:requests_provided_when_job_added).first
+    find_ar_job.requests_provided_when_job_added
   end
 
   def requests_provided_when_job_added=(value)
@@ -80,7 +80,7 @@ class QBWC::ActiveRecord::Job < QBWC::Job
   end
 
   def data
-    find_ar_job.pluck(:data).first
+    find_ar_job.data
   end
 
   def data=(r)
@@ -89,7 +89,7 @@ class QBWC::ActiveRecord::Job < QBWC::Job
   end
 
   def request_index(session)
-    (find_ar_job.pluck(:request_index).first || {})[session.key] || 0
+    (find_ar_job.request_index || {})[session.key] || 0
   end
 
   def set_request_index(session, index)
@@ -125,7 +125,7 @@ class QBWC::ActiveRecord::Job < QBWC::Job
   end
 
   def self.sort_in_time_order(ary)
-    ary.sort {|a,b| a.find_ar_job.first.created_at <=> b.find_ar_job.first.created_at}
+    ary.sort {|a,b| a.find_ar_job.created_at <=> b.find_ar_job.created_at}
   end
 
 end
