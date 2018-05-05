@@ -74,7 +74,7 @@ class QBWC::ActiveRecord::Job < QBWC::Job
   end
 
   def requests_provided_when_job_added
-    find_ar_job..requests_provided_when_job_added)
+    find_ar_job.requests_provided_when_job_added
   end
 
   def requests_provided_when_job_added=(value)
