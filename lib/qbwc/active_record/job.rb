@@ -6,21 +6,22 @@ class QBWC::ActiveRecord::Job < QBWC::Job
     serialize :data
 
     def to_qbwc_job
-      QBWC::ActiveRecord::Job.new(name, enabled, company, worker_class, requests, data, self)
+      QBWC::ActiveRecord::Job.new(name, enabled, company, account_id, worker_class, requests, data, self)
     end
 
   end
 
   # Creates and persists a job.
-  def self.add_job(name, enabled, company, worker_class, requests, data)
+  def self.add_job(name, enabled, company, account_id, worker_class, requests, data)
     worker_class = worker_class.to_s
     ar_job = find_ar_job_with_name(name).first_or_initialize
     ar_job.company = company
+    ar_job.account_id = account_id
     ar_job.enabled = enabled
     ar_job.worker_class = worker_class
     ar_job.save!
 
-    jb = self.new(name, enabled, company, worker_class, requests, data, ar_job)
+    jb = self.new(name, enabled, company, account_id, worker_class, requests, data, ar_job)
     unless requests.nil? || requests.empty?
       request_hash = { [nil, company] => [requests].flatten }
 
@@ -113,9 +114,15 @@ class QBWC::ActiveRecord::Job < QBWC::Job
     job.update(:requests => {}) unless self.requests_provided_when_job_added
   end
 
-  def self.list_jobs
-    QbwcJob.all.map {|ar_job| ar_job.to_qbwc_job}
+  def self.list_jobs(account_id = nil)
+    if account_id
+      jobs = QbwcJob.where(account_id: account_id)
+    else
+      jobs = QbwcJob.all
+    end
+    jobs.map {|ar_job| ar_job.to_qbwc_job}
   end
+
 
   def self.clear_jobs
     QbwcJob.delete_all
