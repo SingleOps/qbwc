@@ -44,7 +44,7 @@ class QBWC::ActiveRecord::Job < QBWC::Job
   end
 
   def find_ar_job
-    self.class.find_ar_job_with_name(name)
+    self
   end
 
   def self.delete_job_with_name(name)
@@ -57,7 +57,7 @@ class QBWC::ActiveRecord::Job < QBWC::Job
   end
 
   def enabled?
-    find_ar_job.where(:enabled => true).exists?
+    true
   end
 
   def requests(session = QBWC::Session.get)
