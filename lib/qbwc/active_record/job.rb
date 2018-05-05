@@ -6,22 +6,21 @@ class QBWC::ActiveRecord::Job < QBWC::Job
     serialize :data
 
     def to_qbwc_job
-      QBWC::ActiveRecord::Job.new(name, enabled, company, account_id, worker_class, requests, data)
+      QBWC::ActiveRecord::Job.new(name, enabled, company, worker_class, requests, data, self)
     end
 
   end
 
   # Creates and persists a job.
-  def self.add_job(name, enabled, company, account_id, worker_class, requests, data)
+  def self.add_job(name, enabled, company, worker_class, requests, data)
     worker_class = worker_class.to_s
     ar_job = find_ar_job_with_name(name).first_or_initialize
     ar_job.company = company
-    ar_job.account_id = account_id
     ar_job.enabled = enabled
     ar_job.worker_class = worker_class
     ar_job.save!
 
-    jb = self.new(name, enabled, company, account_id, worker_class, requests, data)
+    jb = self.new(name, enabled, company, worker_class, requests, data, ar_job)
     unless requests.nil? || requests.empty?
       request_hash = { [nil, company] => [requests].flatten }
 
@@ -44,7 +43,11 @@ class QBWC::ActiveRecord::Job < QBWC::Job
   end
 
   def find_ar_job
-    self
+    if self.storage_job
+      return self.storage_job
+    else
+      self.class.find_ar_job_with_name(name).first
+    end
   end
 
   def self.delete_job_with_name(name)
@@ -53,7 +56,7 @@ class QBWC::ActiveRecord::Job < QBWC::Job
   end
 
   def enabled=(value)
-    find_ar_job.update_all(:enabled => value)
+    find_ar_job.update(:enabled => value)
   end
 
   def enabled?
@@ -67,15 +70,15 @@ class QBWC::ActiveRecord::Job < QBWC::Job
 
   def set_requests(session, requests)
     super
-    find_ar_job.update_all(:requests => @requests)
+    find_ar_job.update(:requests => @requests)
   end
 
   def requests_provided_when_job_added
-    find_ar_job.requests_provided_when_job_added
+    find_ar_job..requests_provided_when_job_added)
   end
 
   def requests_provided_when_job_added=(value)
-    find_ar_job.update_all(:requests_provided_when_job_added => value)
+    find_ar_job.update(:requests_provided_when_job_added => value)
     super
   end
 
@@ -84,7 +87,7 @@ class QBWC::ActiveRecord::Job < QBWC::Job
   end
 
   def data=(r)
-    find_ar_job.update_all(:data => r)
+    find_ar_job.update(:data => r)
     super
   end
 
@@ -93,10 +96,9 @@ class QBWC::ActiveRecord::Job < QBWC::Job
   end
 
   def set_request_index(session, index)
-    find_ar_job.each do |jb|
-      jb.request_index[session.key] = index
-      jb.save
-    end
+    jb = find_ar_job
+    jb.request_index[session.key] = index
+    jb.save
   end
 
   def advance_next_request(session)
@@ -107,17 +109,12 @@ class QBWC::ActiveRecord::Job < QBWC::Job
   def reset
     super
     job = find_ar_job
-    job.update_all :request_index => {}
-    job.update_all(:requests => {}) unless self.requests_provided_when_job_added
+    job.update :request_index => {}
+    job.update(:requests => {}) unless self.requests_provided_when_job_added
   end
 
-  def self.list_jobs(account_id = nil)
-    if account_id
-      jobs = QbwcJob.where(account_id: account_id)
-    else
-      jobs = QbwcJob.all
-    end
-    jobs.map {|ar_job| ar_job.to_qbwc_job}
+  def self.list_jobs
+    QbwcJob.all.map {|ar_job| ar_job.to_qbwc_job}
   end
 
   def self.clear_jobs
