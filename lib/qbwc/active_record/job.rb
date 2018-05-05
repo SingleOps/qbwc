@@ -123,6 +123,10 @@ class QBWC::ActiveRecord::Job < QBWC::Job
     jobs.map {|ar_job| ar_job.to_qbwc_job}
   end
 
+  def self.get_jobs_by_names(job_names, account_id)
+    jobs = QbwcJob.where(account_id: account_id, name: job_names)
+    jobs.map {|ar_job| ar_job.to_qbwc_job}
+  end
 
   def self.clear_jobs
     QbwcJob.delete_all
