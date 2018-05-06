@@ -14,7 +14,7 @@ class QBWC::ActiveRecord::Session < QBWC::Session
       # Restore current job from saved one on QbwcSession
       @current_job = QBWC.get_job(@session.current_job) if @session.current_job
       # Restore pending jobs from saved list on QbwcSession
-      @pending_jobs = ar_refresh_pending_jobs(@session.pending_jobs.split(','), account_id, self)
+      @pending_jobs = @session.pending_jobs.split(',').map { |job_name| QBWC.get_job(job_name) }.select { |job| ! job.nil? }
       super(@session.user, @session.company, @session.ticket, @session.account_id)
     else
       super
@@ -28,12 +28,8 @@ class QBWC::ActiveRecord::Session < QBWC::Session
     end
   end
 
-  def ar_refresh_pending_jobs(pending_job_names, account_id, session)
-    QBWC.get_pending_jobs_by_name(@session.pending_jobs, account_id, self)
-  end
-
   def save
-    @session.pending_jobs = ar_refresh_pending_jobs(pending_jobs.map(&:name), nil, self).join(',')
+    @session.pending_jobs = pending_jobs.map(&:name).join(',')
     @session.current_job = current_job.try(:name)
     @session.save
     super
