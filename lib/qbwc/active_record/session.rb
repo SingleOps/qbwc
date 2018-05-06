@@ -29,6 +29,7 @@ class QBWC::ActiveRecord::Session < QBWC::Session
   end
 
   def refresh_pending_jobs
+    @session = session_or_user
     QBWC.get_pending_jobs_by_name(@session.pending_jobs.split(','), account_id, self)
   end
 
