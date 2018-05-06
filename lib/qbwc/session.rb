@@ -71,7 +71,7 @@ class QBWC::Session
 
   def request_to_send
     request = ''
-    if current_job
+    if !current_job.blank?
       current_job_name = current_job.name
       request = current_request.try(:request) || ''
       QBWC.logger.info("Sending request from job #{current_job_name}")
