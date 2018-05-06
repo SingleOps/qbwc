@@ -40,7 +40,7 @@ class QBWC::ActiveRecord::Job < QBWC::Job
   end
 
   def self.get_jobs_by_names(names)
-    QbwcJob.where(:name => names)
+    QbwcJob.where(:name => names).map {|ar_job| ar_job.to_qbwc_job}
   end
 
   def self.find_ar_job_with_name(name)
