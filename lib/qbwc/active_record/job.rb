@@ -39,6 +39,10 @@ class QBWC::ActiveRecord::Job < QBWC::Job
     return j
   end
 
+  def self.get_jobs_by_names(names)
+    QbwcJob.where(:name => names)
+  end
+
   def self.find_ar_job_with_name(name)
     QbwcJob.where(:name => name)
   end
