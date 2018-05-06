@@ -34,7 +34,7 @@ class QBWC::ActiveRecord::Session < QBWC::Session
 
   def save
     @session.pending_jobs = refresh_pending_jobs(pending_jobs.map(&:name), nil, self)
-    @session.current_job = current_job.reload.try(:name)
+    @session.current_job = current_job.try(:name)
     @session.save
     super
   end
