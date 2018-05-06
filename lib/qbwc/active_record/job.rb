@@ -88,7 +88,8 @@ class QBWC::ActiveRecord::Job < QBWC::Job
   end
 
   def data=(r)
-    find_ar_job.update(:data => r)
+    find_ar_job.data = save
+    find_ar_job.save 
     super
   end
 
