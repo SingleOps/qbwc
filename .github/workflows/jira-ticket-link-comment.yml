@@ -1,0 +1,22 @@
+name: Jira Ticket Link Comment
+
+on:
+  pull_request:
+    types: [opened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  link-jira-issue:
+    name: Link Jira Issue
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Link Jira Issue
+        uses: Landscape-Management-Network/jira-link-issue-action@0f03328cd2a56e05496ebc18c4550e36bcfb68b1
+        with:
+          atlassian-domain: 'https://golmn.atlassian.net'
+          board-names: 'CP,DA,GRN,LC,KGC,GRO,LP,LSP,LVP,SOP,REV,SO'
+          github-token: ${{ secrets.SOP_GITHUB_TOKEN }}
